@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hopiumcode"
+version = "0.1.0"
+description = "Локальный ИИ-агент: помощник по кодовой базе (RAG + граф + MCP)"
+requires-python = ">=3.11"
+dependencies = [
+  "ollama",
+  "chromadb",
+  "rank-bm25",
+  "networkx",
+  "mcp",
+  "pyyaml",
+]
+
+[project.optional-dependencies]
+kuzu = ["kuzu"]
+ui = ["gradio"]
+dev = ["pytest", "ruff"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
