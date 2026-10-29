@@ -265,38 +265,54 @@
     - session
   expected_ranges:
     - src/flask/__init__.py:5-43
-    - src/flask/globals.py:28-51
+    - src/flask/app.py:81-81
+    - src/flask/blueprints.py:18-18
+    - src/flask/globals.py:46-51
   reference_answer: >-
-    В src/flask 24 .py-файла: ядро (app.py — класс Flask, ctx.py — контексты, globals.py —
-    прокси request/session/g/current_app, wrappers.py — Request/Response), сессии
-    (sessions.py), шаблоны, конфиг, CLI, тестовый клиент, подпакеты json/ и sansio/.
-    Публичный API собран в __init__.py: Flask, Blueprint, Config, request, session, g,
-    url_for, jsonify, render_template, сигналы и т.д.
-  notes: "find src/flask -name '*.py' | wc -l -> 24; реэкспорт в __init__.py:5-43."
+    Публичный API пакета собран в src/flask/__init__.py реэкспортом из модулей app (Flask),
+    blueprints (Blueprint), config (Config), ctx (after_this_request, has_request_context),
+    globals (current_app, g, request, session), helpers (abort, redirect, url_for), json
+    (jsonify), signals (request_started, got_request_exception и др.), templating
+    (render_template) и wrappers (Request, Response). Класс Flask определён в app.py,
+    Blueprint в blueprints.py, а request и session в globals.py это LocalProxy поверх
+    контекста запроса.
+  notes: >-
+    Каждое имя из эталона сверено с __init__.py:5-43 (from .X import Y as Y). Эталон не
+    требует знать число файлов и модули, которых нет в __init__.py (cli, testing, sansio).
 
 - id: q11
   type: overview
   question: "За что отвечает подпакет flask.sansio?"
   expected_files:
-    - src/flask/sansio/app.py
     - src/flask/sansio/scaffold.py
+    - src/flask/sansio/app.py
     - src/flask/sansio/blueprints.py
   expected_symbols:
-    - App
     - Scaffold
+    - App
     - Blueprint
+    - Scaffold.route
+    - App.add_url_rule
   expected_ranges:
     - src/flask/sansio/scaffold.py:52-68
+    - src/flask/sansio/scaffold.py:102-154
+    - src/flask/sansio/scaffold.py:336-365
     - src/flask/sansio/app.py:59-63
-    - src/flask/sansio/blueprints.py:119-121
+    - src/flask/sansio/app.py:605-661
+    - src/flask/sansio/blueprints.py:119-131
   reference_answer: >-
-    sansio содержит часть Flask без ввода-вывода: Scaffold с общей для приложения и
-    blueprint'а регистрацией маршрутов, хуков и обработчиков ошибок, App с реестром URL-правил
-    и конфигом, и sansio Blueprint. Эти классы — базовые для flask.Flask и
-    flask.Blueprint, и их могут переиспользовать альтернативные реализации вроде Quart.
+    В sansio лежат базовые классы с регистрацией и конфигурацией приложения: Scaffold
+    (общее поведение Flask и Blueprint) хранит view_functions, error_handler_spec,
+    before_request_funcs и after_request_funcs и даёт декораторы route, before_request,
+    errorhandler. App наследуется от Scaffold и служит центральным реестром view-функций,
+    URL-правил (url_map, add_url_rule) и конфигурации, а sansio Blueprint записывает те же
+    регистрации отложенно, до подключения к приложению. Методов обработки WSGI-запроса
+    (wsgi_app, full_dispatch_request, run) в sansio нет, классы служат базой для
+    flask.Flask и flask.Blueprint.
   notes: >-
-    Назначение явно описано в src/flask/sansio/README.md (не .py, в индекс не попадает),
-    поэтому эталон опирается на docstring'и классов.
+    Только по docstring'ам и коду sansio/*.py. grep -nE "def (wsgi_app|run|full_dispatch_request)"
+    sansio/*.py пусто. sansio/README.md (sans-IO, Quart) намеренно не используется:
+    это не .py и в индекс не попадает.
 
 # --- trap -----------------------------------------------------------------------------------
 - id: q12
@@ -310,3 +326,19 @@
     middleware для ограничения частоты запросов. Агент должен сказать, что не нашёл это в
     коде, и не придумывать ссылки (обычно это делают сторонние расширения).
   notes: "grep -rniE 'rate.?limit|ratelimit|throttl' src/flask -> пусто."
+
+- id: q13
+  type: trap
+  question: "Как во Flask настроена встроенная аутентификация пользователей (логин и пароль)?"
+  expected_files: []
+  expected_symbols: []
+  expected_ranges: []
+  reference_answer: >-
+    Встроенной аутентификации пользователей в исходном коде Flask (src/flask) нет: нет ни
+    проверки логина и пароля, ни хранения учётных данных. Агент должен сказать, что не
+    нашёл этого в коде, и не выдавать примеры из docstring'ов за реализацию.
+  notes: >-
+    grep -rniE "login|logged|password|passwd|authenticat|authoriz|credentials" src/flask
+    находит только примеры в docstring'ах: CustomClient с authentication в Flask.test_client
+    (app.py:698-704) и загрузку пользователя из сессии в Scaffold.before_request
+    (sansio/scaffold.py:463-471). Ссылка на них как на "реализацию" считается выдумкой.
