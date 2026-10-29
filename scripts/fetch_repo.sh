@@ -3,7 +3,7 @@
 # Клон полный, без --depth: вопросы eval про историю опираются на git log / git blame.
 set -euo pipefail
 REPO_URL="${REPO_URL:-https://github.com/pallets/flask.git}"
-REPO_REF="${REPO_REF:-3.1.3}"
+REPO_REF="${REPO_REF:-22d924701a6ae2e4cd01e9a15bbaf3946094af65}"
 REPO_DIR="${REPO_DIR:-data/repo/flask}"
 cd "$(dirname "$0")/.."
 
