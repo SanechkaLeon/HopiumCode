@@ -1,4 +1,6 @@
 PYTHON ?= .venv/bin/python
+# доп. флаги для ask и eval, например ARGS="--fake --mode vector"
+ARGS ?=
 
 .PHONY: fetch index ask test eval lint
 fetch:
@@ -6,10 +8,10 @@ fetch:
 index:
 	$(PYTHON) -m hopiumcode.cli index
 ask:
-	$(PYTHON) -m hopiumcode.cli ask "$(Q)"
+	$(PYTHON) -m hopiumcode.cli ask "$(Q)" $(ARGS)
 test:
 	$(PYTHON) -m pytest -q
 eval:
-	$(PYTHON) -m eval.run_eval
+	$(PYTHON) -m eval.run_eval $(ARGS)
 lint:
 	$(PYTHON) -m ruff check src tests eval
