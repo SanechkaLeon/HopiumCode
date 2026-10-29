@@ -16,6 +16,7 @@ class Config:
     top_k: int = 8
     max_steps: int = 4
     graph_backend: str = "networkx"  # networkx | kuzu
+    repo_name: str = "целевой репозиторий"  # имя проекта для системного промпта
 
     @classmethod
     def from_env(cls) -> "Config":
@@ -30,4 +31,5 @@ class Config:
             top_k=int(e("CG_TOP_K", cls.top_k)),
             max_steps=int(e("CG_MAX_STEPS", cls.max_steps)),
             graph_backend=e("CG_GRAPH_BACKEND", cls.graph_backend),
+            repo_name=e("CG_REPO_NAME", cls.repo_name),
         )
