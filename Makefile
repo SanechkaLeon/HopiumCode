@@ -1,4 +1,6 @@
-.PHONY: index ask test eval lint
+.PHONY: fetch index ask test eval lint
+fetch:
+	bash scripts/fetch_repo.sh
 index:
 	python -m hopiumcode.cli index
 ask:

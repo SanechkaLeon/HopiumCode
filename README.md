@@ -14,7 +14,7 @@ python -m venv .venv && source .venv/bin/activate      # Windows: .venv\Scripts\
 pip install -e ".[dev]"
 cp .env.example .env
 ollama pull qwen3:8b && ollama pull nomic-embed-text    # модели можно менять в .env
-git clone <URL репозитория-цели> data/repo               # выбирается на этапе Э0
+make fetch          # клон Flask 3.1.3 в data/repo/flask (scripts/fetch_repo.sh)
 make index          # индексация (участники 2 и 3)
 make ask Q="Где обрабатывается ошибка подключения?"
 make test
